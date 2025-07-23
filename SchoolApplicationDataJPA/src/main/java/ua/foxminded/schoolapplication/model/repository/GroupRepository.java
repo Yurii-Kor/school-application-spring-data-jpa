@@ -11,16 +11,11 @@ import ua.foxminded.schoolapplication.model.domain.Group;
 public interface GroupRepository extends JpaRepository<Group, Long> {
 
 	@Query("""
-			    SELECT DISTINCT g
-			    FROM Group g
-			    LEFT JOIN FETCH g.students
-			    WHERE g.id IN (
-			        SELECT g2.id
-			        FROM Group g2
-			        LEFT JOIN g2.students s2
-			        GROUP BY g2.id, g2.groupName
-			        HAVING COUNT(s2.id) <= :maxStudents
-			    )
+			    SELECT g2.id
+			    FROM Group g2
+			    LEFT JOIN g2.students s2
+			    GROUP BY g2.id
+			    HAVING COUNT(s2.id) <= :maxStudents
 			""")
-	List<Group> findGroupsWithStudentCountLessThanOrEqualTo(@Param("maxStudents") long maxStudents);
+	List<Long> findGroupIdsByStudentCountLessThanOrEqualTo(@Param("maxStudents") long maxStudents);
 }

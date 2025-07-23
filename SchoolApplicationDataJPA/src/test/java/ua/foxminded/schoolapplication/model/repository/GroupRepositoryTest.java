@@ -151,7 +151,8 @@ class GroupRepositoryTest {
 	@Test
 	@DisplayName("findGroupsWithStudentCountLessOrEqual should return only groups with student count <= max")
 	void findGroupsWithStudentCountLessOrEqualShouldReturnCorrectGroups() {
-		List<Group> result = groupRepository.findGroupsWithStudentCountLessThanOrEqualTo(ONE_STUDENT_PROCESSED);
+		List<Long> resultIds = groupRepository.findGroupIdsByStudentCountLessThanOrEqualTo(ONE_STUDENT_PROCESSED);
+		List<Group> result = groupRepository.findAllById(resultIds);
 
 		assertThat(result).contains(emptyGroup);
 		assertThat(result).doesNotContain(fullGroup);

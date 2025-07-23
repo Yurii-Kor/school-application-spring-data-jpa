@@ -29,32 +29,42 @@ public class ViewDaoService {
 	private final CourseRepository courseRepository;
 
 	private final EntityValidationService validator;
+	private final InputPreprocessingService inputPreprocessor;
 
 	public ViewDaoService(GroupRepository groupRepository, StudentRepository studentRepository,
-			CourseRepository courseRepository, EntityValidationService validator) {
+			CourseRepository courseRepository, EntityValidationService validator,
+			InputPreprocessingService inputPreprocessor) {
 
 		this.groupRepository = groupRepository;
 		this.studentRepository = studentRepository;
 		this.courseRepository = courseRepository;
 		this.validator = validator;
+		this.inputPreprocessor = inputPreprocessor;
 	}
 
 	public List<Group> findGroupsWithStudentCountLessOrEqual(String maxStudentsInput) {
-		validateInputString(maxStudentsInput, "Maximum students input must not be null or empty");
+		inputPreprocessor.validateInputString(maxStudentsInput, "Maximum students input must not be null or empty");
 		logger.debug("Received input for maxStudents: '{}'", maxStudentsInput);
 
-		long parsed = parseLong(maxStudentsInput);
-		validateNonNegativeLong(parsed, String.format("Maximum number of students cannot be negative: %d", parsed));
-		int maxStudents = parsed > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) parsed;
+		Long parsed = inputPreprocessor.parseLong(maxStudentsInput);
+		inputPreprocessor.validateNonNegativeLong(parsed,
+				String.format("Maximum number of students cannot be negative: %d", parsed));
+		Integer maxStudents = inputPreprocessor.parseInteger(parsed);
 
-		List<Group> result = groupRepository.findGroupsWithStudentCountLessThanOrEqualTo(maxStudents);
+		List<Long> resultIds = groupRepository.findGroupIdsByStudentCountLessThanOrEqualTo(maxStudents);
+		if (resultIds.isEmpty()) {
+			logger.debug("No Groups Found with student count <= {}", maxStudents);
+			return List.of();
+		}
+
+		List<Group> result = groupRepository.findAllById(resultIds);
 		logger.debug("Found {} groups with student count <= {}", result.size(), maxStudents);
 
 		return result;
 	}
 
 	public Set<Student> findStudentsByCourseName(String courseNameInput) {
-		validateInputString(courseNameInput, "Course name must not be null or empty");
+		inputPreprocessor.validateInputString(courseNameInput, "Course name must not be null or empty");
 		logger.debug("Received input for course name: '{}'", courseNameInput);
 
 		Course course = courseRepository.findByCourseName(courseNameInput).orElseThrow(() -> {
@@ -77,12 +87,13 @@ public class ViewDaoService {
 	}
 
 	public Student deleteStudentById(String studentIdInput) {
-		validateInputString(studentIdInput, "Student ID input must not be null or empty");
+		inputPreprocessor.validateInputString(studentIdInput, "Student ID input must not be null or empty");
 
 		logger.debug("Received input to delete student by ID: '{}'", studentIdInput);
 
-		Long parsedId = parseLong(studentIdInput);
-		validateNonNegativeLong(parsedId, String.format("Student ID cannot be negative: %d", parsedId));
+		Long parsedId = inputPreprocessor.parseLong(studentIdInput);
+		inputPreprocessor.validateNonNegativeLong(parsedId,
+				String.format("Student ID cannot be negative: %d", parsedId));
 
 		Student studentToDelete = studentRepository.findById(parsedId).orElseThrow(() -> {
 			logger.warn("Student with ID {} does not exist", parsedId);
@@ -96,12 +107,13 @@ public class ViewDaoService {
 	}
 
 	public Course addStudentToCourse(String studentIdInput, String courseNameInput) {
-		validateInputString(studentIdInput, "Student ID input must not be null or empty");
-		validateInputString(courseNameInput, "Course name must not be null or empty");
+		inputPreprocessor.validateInputString(studentIdInput, "Student ID input must not be null or empty");
+		inputPreprocessor.validateInputString(courseNameInput, "Course name must not be null or empty");
 		logger.debug("Received request to add student '{}' to course '{}'", studentIdInput, courseNameInput);
 
-		long parsedStudentId = parseLong(studentIdInput);
-		validateNonNegativeLong(parsedStudentId, String.format("Student ID cannot be negative: %d", parsedStudentId));
+		Long parsedStudentId = inputPreprocessor.parseLong(studentIdInput);
+		inputPreprocessor.validateNonNegativeLong(parsedStudentId,
+				String.format("Student ID cannot be negative: %d", parsedStudentId));
 
 		Course course = courseRepository.findByCourseName(courseNameInput).orElseThrow(() -> {
 			logger.warn("Course with name '{}' does not exist", courseNameInput);
@@ -119,12 +131,13 @@ public class ViewDaoService {
 	}
 
 	public Course removeStudentFromCourse(String studentIdInput, String courseNameInput) {
-		validateInputString(studentIdInput, "Student ID input must not be null or empty");
-		validateInputString(courseNameInput, "Course name must not be null or empty");
+		inputPreprocessor.validateInputString(studentIdInput, "Student ID input must not be null or empty");
+		inputPreprocessor.validateInputString(courseNameInput, "Course name must not be null or empty");
 		logger.debug("Received request to remove student '{}' from course '{}'", studentIdInput, courseNameInput);
 
-		long parsedStudentId = parseLong(studentIdInput);
-		validateNonNegativeLong(parsedStudentId, String.format("Student ID cannot be negative: %d", parsedStudentId));
+		Long parsedStudentId = inputPreprocessor.parseLong(studentIdInput);
+		inputPreprocessor.validateNonNegativeLong(parsedStudentId,
+				String.format("Student ID cannot be negative: %d", parsedStudentId));
 
 		Course course = courseRepository.findByCourseName(courseNameInput).orElseThrow(() -> {
 			logger.warn("Course with name '{}' does not exist", courseNameInput);
@@ -133,7 +146,7 @@ public class ViewDaoService {
 		});
 
 		logger.debug("Removing student id '{}' from course '{}'", studentIdInput, course);
-		boolean removed = course.getStudents().removeIf(student -> student.getId().equals(parsedStudentId));
+		Boolean removed = course.getStudents().removeIf(student -> student.getId().equals(parsedStudentId));
 
 		if (removed) {
 			logger.info("Student with ID {} successfully removed from course '{}'", parsedStudentId, courseNameInput);
@@ -142,28 +155,5 @@ public class ViewDaoService {
 		}
 
 		return course;
-	}
-
-	private Long parseLong(String input) {
-		try {
-			return Long.parseLong(input);
-		} catch (NumberFormatException e) {
-			logger.error("Failed to parse input '{}' as number", input, e);
-			throw new IllegalArgumentException(String.format("Invalid Input: '%s' is not a number.", input), e);
-		}
-	}
-
-	private void validateInputString(String input, String errorMessage) {
-		if (input == null || input.trim().isEmpty()) {
-			logger.warn("Provided input string is null or empty");
-			throw new IllegalArgumentException(errorMessage);
-		}
-	}
-
-	private void validateNonNegativeLong(Long id, String errorMessage) {
-		if (id < 0) {
-			logger.warn("Provided ID is negative: {}", id);
-			throw new IllegalArgumentException(errorMessage);
-		}
 	}
 }

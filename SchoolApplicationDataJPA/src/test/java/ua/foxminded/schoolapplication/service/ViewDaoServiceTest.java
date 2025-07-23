@@ -29,7 +29,7 @@ import java.util.Set;
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Import({ ViewDaoService.class, EntityValidationService.class, TestcontainersConfiguration.class,
-		TestDataInitializer.class, ValidatorConfig.class })
+		TestDataInitializer.class, ValidatorConfig.class, InputPreprocessingService.class })
 
 class ViewDaoServiceTest {
 
