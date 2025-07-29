@@ -46,10 +46,9 @@ public class ViewDaoService {
 		inputPreprocessor.validateInputString(maxStudentsInput, "Maximum students input must not be null or empty");
 		logger.debug("Received input for maxStudents: '{}'", maxStudentsInput);
 
-		Long parsed = inputPreprocessor.parseLong(maxStudentsInput);
-		inputPreprocessor.validateNonNegativeLong(parsed,
-				String.format("Maximum number of students cannot be negative: %d", parsed));
-		Integer maxStudents = inputPreprocessor.parseInteger(parsed);
+		Integer maxStudents = inputPreprocessor.parseInteger(maxStudentsInput);
+		inputPreprocessor.validateNonNegativeNum(maxStudents,
+				String.format("Maximum number of students cannot be negative:  %d", maxStudents));
 
 		List<Long> resultIds = groupRepository.findGroupIdsByStudentCountLessThanOrEqualTo(maxStudents);
 		if (resultIds.isEmpty()) {
@@ -92,7 +91,7 @@ public class ViewDaoService {
 		logger.debug("Received input to delete student by ID: '{}'", studentIdInput);
 
 		Long parsedId = inputPreprocessor.parseLong(studentIdInput);
-		inputPreprocessor.validateNonNegativeLong(parsedId,
+		inputPreprocessor.validateNonNegativeNum(parsedId,
 				String.format("Student ID cannot be negative: %d", parsedId));
 
 		Student studentToDelete = studentRepository.findById(parsedId).orElseThrow(() -> {
@@ -112,7 +111,7 @@ public class ViewDaoService {
 		logger.debug("Received request to add student '{}' to course '{}'", studentIdInput, courseNameInput);
 
 		Long parsedStudentId = inputPreprocessor.parseLong(studentIdInput);
-		inputPreprocessor.validateNonNegativeLong(parsedStudentId,
+		inputPreprocessor.validateNonNegativeNum(parsedStudentId,
 				String.format("Student ID cannot be negative: %d", parsedStudentId));
 
 		Course course = courseRepository.findByCourseName(courseNameInput).orElseThrow(() -> {
@@ -136,7 +135,7 @@ public class ViewDaoService {
 		logger.debug("Received request to remove student '{}' from course '{}'", studentIdInput, courseNameInput);
 
 		Long parsedStudentId = inputPreprocessor.parseLong(studentIdInput);
-		inputPreprocessor.validateNonNegativeLong(parsedStudentId,
+		inputPreprocessor.validateNonNegativeNum(parsedStudentId,
 				String.format("Student ID cannot be negative: %d", parsedStudentId));
 
 		Course course = courseRepository.findByCourseName(courseNameInput).orElseThrow(() -> {

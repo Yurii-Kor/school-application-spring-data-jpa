@@ -18,13 +18,14 @@ public class InputPreprocessingService {
 		}
 	}
 
-	public Integer parseInteger(Long parsed) {
-		if (parsed > Integer.MAX_VALUE) {
-			logger.error("Failed to parse integer '{}'", parsed);
+	public Integer parseInteger(String input) {
+		try {
+			return Integer.parseInt(input);
+		} catch (NumberFormatException e) {
+			logger.error("Failed to parse input '{}' as number", input, e);
 			throw new IllegalArgumentException(
-					String.format("Invalid Long Number: '%s' is too large for Integer.", parsed));
+					String.format("Invalid Input: '%s' is not a number or too large num.", input), e);
 		}
-		return parsed.intValue();
 	}
 
 	public void validateInputString(String input, String errorMessage) {
@@ -34,9 +35,10 @@ public class InputPreprocessingService {
 		}
 	}
 
-	public void validateNonNegativeLong(Long id, String errorMessage) {
-		if (id < 0) {
-			logger.warn("Provided ID is negative: {}", id);
+	public void validateNonNegativeNum(Number number, String errorMessage) {
+		long value = number.longValue();
+		if (value < 0) {
+			logger.warn("Provided ID is negative: {}", value);
 			throw new IllegalArgumentException(errorMessage);
 		}
 	}
