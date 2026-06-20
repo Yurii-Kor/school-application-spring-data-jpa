@@ -1,6 +1,6 @@
 spring:
   application:
-    name: SchoolApplicationHibernate
+    name: SchoolApplicationDataJPA
 
   datasource:
     url: jdbc:postgresql://localhost:5433/school_console_app
