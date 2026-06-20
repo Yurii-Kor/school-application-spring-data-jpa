@@ -1,27 +1,25 @@
+### Build output ###
 /bin/
 /target/
 /logs/
-.settings/
-.mvn/
-.classpath
-.project
+/build/
 
-target/
-!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-### STS ###
-.apt_generated
+### Eclipse / STS ###
+.apt_generated/
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
-.sts4-cache
+.sts4-cache/
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -32,9 +30,15 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
+### Visual Studio Code ###
 .vscode/
+
+### Operating system ###
+.DS_Store
+Thumbs.db
+
+### Local environment ###
+.env
+.env.*
+!.env.example
