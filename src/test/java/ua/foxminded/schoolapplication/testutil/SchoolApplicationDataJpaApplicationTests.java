@@ -6,10 +6,9 @@ import org.springframework.context.annotation.Import;
 
 @Import(TestcontainersConfiguration.class)
 @DataJpaTest
-class SchoolApplicationHibernateApplicationTests {
+class SchoolApplicationDataJpaApplicationTests {
 
 	@Test
 	void contextLoads() {
 	}
-
 }
