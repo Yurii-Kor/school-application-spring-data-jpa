@@ -1,0 +1,88 @@
+name: Publish Docker image
+
+run-name: Prepare release ${{ inputs.version || 'validation' }}
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - pom.xml
+      - Dockerfile
+      - .dockerignore
+      - docker-compose.yml
+      - compose.demo.yaml
+      - .github/workflows/publish-docker.yml
+      - .github/scripts/prepare_release_tag.sh
+      - .github/scripts/verify_spring_boot_jar.sh
+      - .github/scripts/verify_docker_demo.sh
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version in MAJOR.MINOR.PATCH format
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-release-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate-release:
+    name: Validate release configuration
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate release script
+        run: bash -n .github/scripts/prepare_release_tag.sh
+
+      - name: Validate release configuration
+        env:
+          REQUESTED_VERSION: ""
+        run: bash .github/scripts/prepare_release_tag.sh
+
+  prepare-release:
+    name: Prepare release tag
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    permissions:
+      contents: write
+
+    outputs:
+      release_version: ${{ steps.release.outputs.release_version }}
+      release_tag: ${{ steps.release.outputs.release_tag }}
+      release_sha: ${{ steps.release.outputs.release_sha }}
+      tag_action: ${{ steps.release.outputs.tag_action }}
+      tag_created: ${{ steps.release.outputs.tag_created }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Validate release script
+        run: bash -n .github/scripts/prepare_release_tag.sh
+
+      - name: Validate release and prepare tag
+        id: release
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: bash .github/scripts/prepare_release_tag.sh
