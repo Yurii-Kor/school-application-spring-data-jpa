@@ -1,0 +1,5 @@
+*
+
+!Dockerfile
+!target/
+!target/SchoolApplicationDataJPA-*.jar

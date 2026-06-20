@@ -3,11 +3,10 @@ spring:
     name: SchoolApplicationDataJPA
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/school_console_app
-    username: postgres
-    password: 19
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/school_console_app}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:local-dev-password}
     driver-class-name: org.postgresql.Driver
-
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
@@ -35,4 +34,4 @@ spring:
 logging:
   level:
     org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.orm.jdbc.bind: TRACE

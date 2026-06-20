@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: school_console_app
+      POSTGRES_USER: school_demo
+      POSTGRES_PASSWORD: local-demo-password
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U school_demo -d school_console_app
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    image: ${APP_IMAGE:?Set APP_IMAGE to the Docker image being tested}
+    pull_policy: never
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/school_console_app
+      SPRING_DATASOURCE_USERNAME: school_demo
+      SPRING_DATASOURCE_PASSWORD: local-demo-password
+    stdin_open: true
+    tty: true
