@@ -40,6 +40,7 @@ jobs:
         run: |
           bash -n run.sh
           bash -n .github/scripts/verify_spring_boot_jar.sh
+          bash -n .github/scripts/verify_docker_demo.sh
           python3 -m py_compile \
             .github/scripts/publish_test_summary.py
 
@@ -105,3 +106,43 @@ jobs:
           path: ${{ steps.jar.outputs.path }}
           if-no-files-found: error
           retention-days: 14
+
+  docker:
+    name: Build Docker image
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      IMAGE_TAG: ${{ github.event.repository.name }}:ci-${{ github.sha }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Download Spring Boot JAR
+        uses: actions/download-artifact@v8
+        with:
+          name: spring-boot-jar
+          path: target
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v7
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true
+          tags: ${{ env.IMAGE_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify Docker image and demo
+        run: |
+          bash .github/scripts/verify_docker_demo.sh \
+            "$IMAGE_TAG"
