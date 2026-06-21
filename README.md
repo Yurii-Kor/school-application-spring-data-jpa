@@ -1,7 +1,26 @@
-# SchoolApplication Spring Data JPA
+# School Application Spring Data JPA
 
-📘 The project is built using Spring Data JPA, which provides a clean abstraction over JPA and handles most of the database interaction automatically through repositories.
+### Java 21 · Spring Boot · Spring Data JPA · Version 1.0.0
 
+[![Spring Data JPA CI](https://github.com/Yurii-Kor/school-application-spring-data-jpa/actions/workflows/spring-data-jpa-ci.yml/badge.svg)](https://github.com/Yurii-Kor/school-application-spring-data-jpa/actions/workflows/spring-data-jpa-ci.yml)
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.4-brightgreen)
+![Spring Data JPA](https://img.shields.io/badge/Persistence-Spring%20Data%20JPA-blue)
+![Database](https://img.shields.io/badge/Database-PostgreSQL-blue)
+![Docker](https://img.shields.io/badge/Docker-ready-blue)
+![Type](https://img.shields.io/badge/Type-Console%20Application-lightgrey)
+
+Console-based school management application built with Spring Boot, Spring Data JPA repositories, Hibernate, PostgreSQL, Flyway, Bean Validation, Docker, and GitHub Actions.
+
+This project is the fourth step in the School Application learning series. Unlike the Hibernate / JPA version, it no longer implements persistence operations through manual DAO classes or direct `EntityManager` usage in the application layer. Instead, the persistence layer is built around Spring Data JPA repository interfaces.
+
+Spring Data JPA significantly reduces the amount of persistence boilerplate code. Repository interfaces provide common CRUD operations automatically, while custom finder methods and explicit `@Query` declarations cover project-specific queries. This allows the application code to stay focused more on business logic, validation, and user-facing behavior.
+
+The database structure remains the same as in the previous projects, which makes the persistence-layer evolution easier to compare across the series.
+
+For background on the Spring Data JPA repository approach, see the Baeldung guide: [Introduction to Spring Data JPA](https://www.baeldung.com/the-persistence-layer-with-spring-data-jpa).
+
+---
 ## 📦 Features
 
 This application provides a simple CLI interface for managing school data:
