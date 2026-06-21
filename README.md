@@ -21,27 +21,51 @@ The database structure remains the same as in the previous projects, which makes
 For background on the Spring Data JPA repository approach, see the Baeldung guide: [Introduction to Spring Data JPA](https://www.baeldung.com/the-persistence-layer-with-spring-data-jpa).
 
 ---
-## 📦 Features
+<details open>
+<summary><h2>Technology Stack</h2></summary>
 
-This application provides a simple CLI interface for managing school data:
+| Area                    | Technology                                       |
+| ----------------------- | ------------------------------------------------ |
+| Language                | Java 21                                          |
+| Build tool              | Maven                                            |
+| Application framework   | Spring Boot                                      |
+| Persistence abstraction | Spring Data JPA                                  |
+| Repository API          | `JpaRepository`, repository interfaces           |
+| ORM provider            | Hibernate                                        |
+| Persistence model       | JPA entities, relationships, persistence context |
+| Database                | PostgreSQL                                       |
+| Database migrations     | Flyway                                           |
+| Validation              | Jakarta Bean Validation                          |
+| Testing                 | JUnit 5, Mockito, Spring Test, Testcontainers    |
+| Containerization        | Docker, Docker Compose                           |
+| CI/CD                   | GitHub Actions, Docker Hub release workflow      |
 
-- 🔍 View all groups with a student count less than or equal to a specified number
-- 📚 List all students enrolled in a specific course
-- ➕ Add a new student to a group
-- ❌ Delete a student by ID
-- 🔗 Assign a student to a course
-- 🔓 Remove a student from a course
+This project moves persistence from manually implemented DAO classes to Spring Data JPA repositories. Common CRUD operations are provided by repository interfaces, while project-specific queries are expressed through derived query methods and explicit `@Query` declarations.
 
-## 🧱 Tech Stack
+Compared to the Hibernate / JPA version, this approach significantly reduces the amount of data-access code and allows the application to focus more on validation, business logic, and user-facing behavior.
 
-- Java 21  
-- Spring Boot 3.4  
-- Hibernate / JPA  
-- Flyway  
-- PostgreSQL  
-- HikariCP for connection pooling  
-- Docker + Docker Compose
+</details>
 
+---
+<details>
+<summary><h2>Features</h2></summary>
+
+The service and repository layers support the core school-management operations for groups, students, courses, and student-course enrollments.
+
+Unlike the previous Hibernate / JPA project, persistence operations are no longer implemented through manual DAO classes with direct `EntityManager` usage. Instead, the application delegates data access to Spring Data JPA repository interfaces.
+
+The console UI exposes the following user-facing actions:
+
+* Find all groups with a student count less than or equal to a given number.
+* List all students enrolled in a course by course name.
+* Add a new student.
+* Delete a student by student ID.
+* Assign a student to a course.
+* Remove a student from one of their courses.
+
+</details>
+
+---
 ## 🐳 Dockerized Deployment
 
 The application requires PostgreSQL and can be run in two ways:
