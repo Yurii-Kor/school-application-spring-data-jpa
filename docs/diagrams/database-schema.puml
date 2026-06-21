@@ -1,0 +1,68 @@
+@startuml
+title School Application - Database Schema
+
+skinparam linetype ortho
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+entity "groups" as groups {
+  * group_id : BIGINT <<PK>>
+  --
+  * group_name : VARCHAR(255) <<UNIQUE>>
+}
+
+entity "students" as students {
+  * student_id : BIGINT <<PK>>
+  --
+  * group_id : BIGINT <<FK>>
+  * first_name : VARCHAR(255)
+  * last_name : VARCHAR(255)
+}
+
+entity "courses" as courses {
+  * course_id : BIGINT <<PK>>
+  --
+  * course_name : VARCHAR(255) <<UNIQUE>>
+  course_description : TEXT
+}
+
+entity "students_courses" as students_courses {
+  * student_id : BIGINT <<PK, FK>>
+  * course_id : BIGINT <<PK, FK>>
+}
+
+groups ||--o{ students : "has"
+students ||--o{ students_courses : "enrolls"
+courses ||--o{ students_courses : "contains"
+
+note right of groups
+Seed data:
+- 10 generated groups
+- group_id starts from 100
+- group name format: XX-00
+end note
+
+note right of students
+Seed data:
+- 200 generated students
+- student_id starts from 1000
+- max 30 students per group
+end note
+
+note right of courses
+Seed data:
+- 10 predefined courses
+- course_id starts from 10
+end note
+
+note bottom of students_courses
+Join table for many-to-many relation:
+students <-> courses
+
+Seed data:
+- each student gets 1..3 random courses
+- duplicate links are ignored
+end note
+
+@enduml
