@@ -66,6 +66,70 @@ The console UI exposes the following user-facing actions:
 </details>
 
 ---
+<details open>
+<summary><h2>Application Structure</h2></summary>
+
+This diagram shows the main structural blocks of the Spring Data JPA version.
+It highlights the transition from manually implemented DAO classes to repository-based persistence through Spring Data JPA.
+
+![School Application Spring Data JPA application structure](docs/diagrams/application-structure.svg)
+
+In this project, the console UI still exposes the same school-management actions, but the persistence layer now works through Spring Data JPA repository interfaces instead of custom DAO implementations.
+
+The main flow is:
+
+```text
+Spring Boot Entry Point → Console UI → Service Layer → Repository Layer → Spring Data JPA → Hibernate / JPA → PostgreSQL
+```
+
+The PlantUML source for this diagram is stored in:
+
+```text
+docs/diagrams/application-structure.puml
+```
+
+The rendered SVG diagram is stored in:
+
+```text
+docs/diagrams/application-structure.svg
+```
+
+</details>
+
+---
+<details open>
+<summary><h2>Database Schema</h2></summary>
+
+The application uses the same school-management database schema as the previous projects in the series: academic groups, students, courses, and a many-to-many relation between students and courses.
+
+![School Application Spring Data JPA database schema](docs/diagrams/database-schema.svg)
+
+| Table              | Purpose                                  | Seed data                                  |
+| ------------------ | ---------------------------------------- | ------------------------------------------ |
+| `groups`           | Stores academic groups                   | 10 random groups, IDs start from `100`     |
+| `students`         | Stores students assigned to groups       | 200 random students, IDs start from `1000` |
+| `courses`          | Stores available courses                 | 10 predefined courses, IDs start from `10` |
+| `students_courses` | Join table for student-course enrollment | Each student gets 1–3 random courses       |
+
+The database structure remains unchanged from the earlier repositories in the series. This makes it easier to compare how the persistence layer evolves while the domain model stays consistent.
+
+In this repository, the schema is still managed through Flyway migrations, but application code interacts with the data through Spring Data JPA repositories for entities such as `Student`, `Group`, and `Course`.
+
+The PlantUML source for this diagram is stored in:
+
+```text
+docs/diagrams/database-schema.puml
+```
+
+The rendered SVG diagram is stored in:
+
+```text
+docs/diagrams/database-schema.svg
+```
+
+</details>
+
+---
 ## 🐳 Dockerized Deployment
 
 The application requires PostgreSQL and can be run in two ways:
