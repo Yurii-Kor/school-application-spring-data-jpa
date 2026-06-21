@@ -460,7 +460,7 @@ The application still requires PostgreSQL to be available according to the confi
 </details>
 
 ---
-## Learning Context and Project Scope
+## Project Scope
 
 This project is part of a learning series that implements the same school-management domain through progressively higher persistence abstractions:
 
