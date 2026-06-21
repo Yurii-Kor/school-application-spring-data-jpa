@@ -137,13 +137,14 @@ The application requires PostgreSQL and can be run in two ways:
 1. Run the published image from Docker Hub without cloning the repository.
 2. Build and run the application locally from the source code.
 
-### Option 1: Run from Docker Hub
+<details>
+<summary><strong>Option 1: Run from Docker Hub</strong></summary>
 
 This option is intended for quickly trying the released application. The source repository is not required.
 
 The commands below are intended for Bash or WSL.
 
-#### 1. Pull the released application image
+### 1. Pull the released application image
 
 ```bash
 IMAGE=yuriikorolkov/school-application-spring-data-jpa:1.0.0
@@ -153,13 +154,13 @@ docker pull "$IMAGE"
 
 The immutable version tag `1.0.0` is recommended for reproducible runs. The `latest` tag points to the most recently published release.
 
-#### 2. Create a Docker network
+### 2. Create a Docker network
 
 ```bash
 docker network create school-data-jpa-demo
 ```
 
-#### 3. Start PostgreSQL
+### 3. Start PostgreSQL
 
 ```bash
 docker run -d --rm \
@@ -175,7 +176,7 @@ docker run -d --rm \
   postgres:16
 ```
 
-#### 4. Wait until PostgreSQL is ready
+### 4. Wait until PostgreSQL is ready
 
 ```bash
 until docker inspect \
@@ -187,7 +188,7 @@ until docker inspect \
 done
 ```
 
-#### 5. Run the application
+### 5. Run the application
 
 ```bash
 docker run --rm -it \
@@ -201,7 +202,7 @@ docker run --rm -it \
 
 The application starts in interactive console mode. Select `q` to exit.
 
-#### 6. Clean up the demo environment
+### 6. Clean up the demo environment
 
 ```bash
 docker stop school-data-jpa-postgres
@@ -210,9 +211,12 @@ docker network rm school-data-jpa-demo
 
 The PostgreSQL container uses temporary storage in this demo, so its data is removed during cleanup.
 
+</details>
+
 ---
 
-### Option 2: Build and run locally
+<details>
+<summary><strong>Option 2: Build and run locally</strong></summary>
 
 This option is intended for development and testing changes made to the source code.
 
@@ -227,7 +231,8 @@ The local startup scripts automatically:
 
 Maven tests are skipped by default to make repeated local startup faster.
 
-#### Linux or WSL
+<details>
+<summary><strong>Linux or WSL</strong></summary>
 
 Make the script executable after cloning the repository if necessary:
 
@@ -235,31 +240,31 @@ Make the script executable after cloning the repository if necessary:
 chmod +x run.sh
 ```
 
-##### Standard startup
+### Standard startup
 
 ```bash
 ./run.sh
 ```
 
-##### Startup with Maven tests
+### Startup with Maven tests
 
 ```bash
 ./run.sh --run-tests
 ```
 
-##### Startup with a clean database
+### Startup with a clean database
 
 ```bash
 ./run.sh --reset-database
 ```
 
-##### Startup with a custom PostgreSQL password
+### Startup with a custom PostgreSQL password
 
 ```bash
 ./run.sh --postgres-password "my-local-password"
 ```
 
-##### Run tests and reset the database
+### Run tests and reset the database
 
 ```bash
 ./run.sh \
@@ -267,7 +272,7 @@ chmod +x run.sh
   --reset-database
 ```
 
-##### Reset the database and use a custom password
+### Reset the database and use a custom password
 
 ```bash
 ./run.sh \
@@ -275,7 +280,7 @@ chmod +x run.sh
   --postgres-password "my-local-password"
 ```
 
-##### Use all available startup options
+### Use all available startup options
 
 ```bash
 ./run.sh \
@@ -284,15 +289,16 @@ chmod +x run.sh
   --postgres-password "my-local-password"
 ```
 
-##### Display all supported options
+### Display all supported options
 
 ```bash
 ./run.sh --help
 ```
 
----
+</details>
 
-#### Windows PowerShell
+<details>
+<summary><strong>Windows PowerShell</strong></summary>
 
 PowerShell may prevent local scripts from running because of the current execution policy. The script can be started for the current invocation without permanently changing the system policy:
 
@@ -302,31 +308,31 @@ powershell -ExecutionPolicy Bypass -File .\run.ps1
 
 If local scripts are already allowed, use the shorter commands below.
 
-##### Standard startup
+### Standard startup
 
 ```powershell
 .\run.ps1
 ```
 
-##### Startup with Maven tests
+### Startup with Maven tests
 
 ```powershell
 .\run.ps1 -RunTests
 ```
 
-##### Startup with a clean database
+### Startup with a clean database
 
 ```powershell
 .\run.ps1 -ResetDatabase
 ```
 
-##### Startup with a custom PostgreSQL password
+### Startup with a custom PostgreSQL password
 
 ```powershell
 .\run.ps1 -PostgresPassword "my-local-password"
 ```
 
-##### Run tests and reset the database
+### Run tests and reset the database
 
 ```powershell
 .\run.ps1 `
@@ -334,7 +340,7 @@ If local scripts are already allowed, use the shorter commands below.
   -ResetDatabase
 ```
 
-##### Reset the database and use a custom password
+### Reset the database and use a custom password
 
 ```powershell
 .\run.ps1 `
@@ -342,7 +348,7 @@ If local scripts are already allowed, use the shorter commands below.
   -PostgresPassword "my-local-password"
 ```
 
-##### Use all available startup options
+### Use all available startup options
 
 ```powershell
 .\run.ps1 `
@@ -357,11 +363,18 @@ The PowerShell options can also be provided on one line:
 .\run.ps1 -RunTests -ResetDatabase -PostgresPassword "my-local-password"
 ```
 
-### Local environment management
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><strong>Local environment management</strong></summary>
 
 After the console application exits, PostgreSQL remains available and its data is preserved for the next startup.
 
-#### Stop the local environment
+### Stop the local environment
 
 Linux or WSL:
 
@@ -380,7 +393,7 @@ Remove-Item Env:POSTGRES_PASSWORD
 
 This stops and removes the containers and network while preserving the PostgreSQL volume.
 
-#### Stop the environment and delete the database
+### Stop the environment and delete the database
 
 Linux or WSL:
 
@@ -415,4 +428,33 @@ Windows PowerShell:
 .\run.ps1 -ResetDatabase
 ```
 
+</details>
 
+---
+
+<details>
+<summary><strong>Build and Test without Docker</strong></summary>
+
+This section is intended for local development when PostgreSQL is already available and configured for the application.
+
+Run the test suite:
+
+```bash
+./mvnw clean test
+```
+
+Build the executable Spring Boot JAR:
+
+```bash
+./mvnw clean package
+```
+
+Run the packaged application:
+
+```bash
+java -jar target/SchoolApplicationDataJPA-1.0.0.jar
+```
+
+The application still requires PostgreSQL to be available according to the configured datasource properties. For a fully prepared local environment, prefer the Docker-based startup scripts described above.
+
+</details>
