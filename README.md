@@ -458,3 +458,38 @@ java -jar target/SchoolApplicationDataJPA-1.0.0.jar
 The application still requires PostgreSQL to be available according to the configured datasource properties. For a fully prepared local environment, prefer the Docker-based startup scripts described above.
 
 </details>
+
+---
+## Learning Context and Project Scope
+
+This project is part of a learning series that implements the same school-management domain through progressively higher persistence abstractions:
+
+1. [School Application JDBC](https://github.com/Yurii-Kor/school-application-jdbc) — plain JDBC, SQL, DAO pattern, manual wiring.
+2. [School Application on Spring](https://github.com/Yurii-Kor/school-application-on-spring) — Spring Boot with Spring JDBC infrastructure.
+3. [School Application Hibernate](https://github.com/Yurii-Kor/school-application-hibernate) — Hibernate / JPA persistence layer.
+4. [School Application Spring Data JPA](https://github.com/Yurii-Kor/school-application-spring-data-jpa) — Spring Data JPA repositories.
+
+The goal of the series is to show how the data access layer evolves from manual SQL and JDBC code to repository-based persistence.
+
+This repository represents the fourth step of the series. It moves the persistence layer from manually implemented DAO classes to Spring Data JPA repository interfaces.
+
+The database structure remains unchanged from the previous projects, but the amount of persistence code is significantly reduced. Common CRUD operations are provided by Spring Data JPA, while custom finder methods and explicit `@Query` declarations cover project-specific queries.
+
+This approach allows the application to rely on repository abstractions for data access and focus more on validation, business logic, and user-facing behavior.
+
+It demonstrates:
+
+* Spring Data JPA repository interfaces as the main persistence abstraction.
+* `JpaRepository` usage for common CRUD operations.
+* Derived query methods for simple lookup operations.
+* Custom `@Query` methods for project-specific database queries.
+* JPA entity mapping with `Student`, `Group`, and `Course`.
+* Hibernate as the underlying JPA provider.
+* Repository-based persistence instead of manual DAO implementation.
+* Reduced boilerplate compared to direct `EntityManager` usage.
+* Many-to-many enrollment mapping between students and courses.
+* Transactional persistence operations through Spring.
+* PostgreSQL schema management through Flyway migrations.
+* Jakarta Bean Validation for entity and input validation.
+* Integration testing with Spring Test and Testcontainers.
+* Dockerized runtime setup and GitHub Actions CI/CD.
